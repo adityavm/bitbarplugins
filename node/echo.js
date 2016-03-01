@@ -19,6 +19,11 @@ function extend(o,n) {
 		ptbb = "/Users/aditya/dev/bitbar-plugins/node",
 		fsread = q.defer();
 
+	let priority = {
+		symbol: ["","🚫","♨️","‼️","❗️","❕"],
+		inword: ["","blocker","critical","major","minor","trivial"]
+	};
+
 	fs.readFile(ptbb +"/.cfg", "utf8", function(err,body){
 		if(err) {
 			console.log(process.cwd());
@@ -32,7 +37,7 @@ function extend(o,n) {
 	fsread.promise.then(function(_cfg){
 		cfg = extend(cfg, _cfg);
 		let opts = {
-			url: "http://"+ cfg.jira_user +":"+ cfg.jira_pass +"@jira.unikrn.com/rest/api/2/search?jql=" + encodeURIComponent('status in (New, "To Do", "In Progress") AND resolution = Unresolved AND assignee in (currentUser()) ORDER BY priority DESC, updatedDate DESC'),
+			url: "http://"+ cfg.jira_user +":"+ cfg.jira_pass +"@jira.unikrn.com/rest/api/2/search?jql=" + encodeURIComponent('status in (New, "To Do", "In Progress") AND resolution = Unresolved AND assignee in (currentUser()) ORDER BY updatedDate DESC'),
 		}
 		request.get(opts.url, function(err,resp,body){
 			if(err){
@@ -51,34 +56,34 @@ function extend(o,n) {
 
 			let title = [];
 
-			title.push((issues.blocker.length && cfg.jira_show.indexOf("blocker")>-1) ? "🚫"+ issues.blocker.length : "");
-			title.push((issues.critical.length && cfg.jira_show.indexOf("critical")>-1) ? "♨️"+ issues.major.length : "");
-			title.push((issues.major.length && cfg.jira_show.indexOf("major")>-1) ? "‼️"+ issues.major.length : "");
-			title.push((issues.minor.length && cfg.jira_show.indexOf("minor")>-1) ? "❗️"+ issues.minor.length : "");
-			title.push((issues.trivial.length && cfg.jira_show.indexOf("trivial")>-1) ? "❕"+ issues.trivial.length : "");
+			[1,2,3,4,5].map(function(i){
+				title.push(
+					issues[priority.inword[i]].length && cfg.jira_show.indexOf(priority.inword[i])>-1 ? priority.symbol[i] + issues[priority.inword[i]].length : ""
+				)
+			});
 
-			bitbar([
+			var output = [
 				{
 					text: title.join(""),
-					dropdown: false
 				},
-				bitbar.sep,
-				{
-					text: "🚫"+ issues.blocker.length +" Blockers"
-				},
-				{
-					text: "♨️"+ issues.critical.length +" Critical"
-				},
-				{
-					text: "‼️"+ issues.major.length +" Major"
-				},
-				{
-					text: "❗️"+ issues.minor.length +" Minor"
-				},
-				{
-					text: "❕"+ issues.trivial.length +" Trival"
-				}
-			])
+				bitbar.sep
+			];
+
+			[1,2,3,4,5].map(function(i){
+				output.push({text: priority.symbol[i] +" "+ issues[priority.inword[i]].length +" "+ priority.inword[i]});
+			});
+
+			output.push(bitbar.sep);
+			output.push({text: "Last 5 Updated Issues"});
+
+			[0,1,2,3,4].map(function(i){
+				output.push({
+					text: priority.symbol[body.issues[i].fields.priority.id] +" "+ body.issues[i].fields.summary,
+					href: "https://jira.unikrn.com/browse/"+ body.issues[i].fields.key
+				})
+			});
+
+			bitbar(output);
 		});
 	});
 })();
