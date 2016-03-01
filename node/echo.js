@@ -79,7 +79,7 @@ function extend(o,n) {
 			[0,1,2,3,4].map(function(i){
 				output.push({
 					text: priority.symbol[body.issues[i].fields.priority.id] +" "+ body.issues[i].fields.summary,
-					href: "https://jira.unikrn.com/browse/"+ body.issues[i].fields.key
+					href: "https://jira.unikrn.com/browse/"+ body.issues[i].key
 				})
 			});
 
