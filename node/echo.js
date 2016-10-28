@@ -37,10 +37,11 @@ function extend(o,n) {
 	fsread.promise.then(function(_cfg){
 		cfg = extend(cfg, _cfg);
 		let opts = {
-			url: "http://"+ cfg.jira_user +":"+ cfg.jira_pass +"@jira.unikrn.com/rest/api/2/search?jql=" + encodeURIComponent('status in (New, "To Do", "In Progress") AND resolution = Unresolved AND assignee in (currentUser()) ORDER BY updatedDate DESC'),
+			url: "http://"+ cfg.jira_user +":"+ cfg.jira_pass +"@jira.unikrn.com/rest/api/2/search?jql=" + encodeURIComponent('type in ("Bug", "Task") AND status in (New, "To Do", "In Progress") AND resolution = Unresolved AND assignee in (currentUser()) ORDER BY updatedDate DESC'),
 		}
 		request.get(opts.url, function(err,resp,body){
 			if(err){
+				// console.log(err, body);
 				return;
 			}
 

@@ -1,0 +1,15 @@
+{
+  "name": "bitbar plugins",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "parse5": "^2.2.2",
+    "q": "^1.4.1",
+    "request": "^2.75.0",
+    "xmldom": "^0.1.22",
+    "xmlserializer": "^0.4.0",
+    "xpath": "0.0.23"
+  }
+}
